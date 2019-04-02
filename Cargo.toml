@@ -1,0 +1,25 @@
+[package]
+name = "ray-tracer"
+version = "0.1.0"
+authors = ["James Coglan <jcoglan@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+wasm-bindgen = "*"
+console_error_panic_hook = { version = "*", optional = true }
+
+[dependencies.web-sys]
+version = "*"
+features = ["console"]
+
+[dev-dependencies]
+wasm-bindgen-test = "*"
+
+[profile.release]
+opt-level = "s"

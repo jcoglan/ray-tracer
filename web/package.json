@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "webpack": "*",
+    "webpack-cli": "*",
+    "webpack-dev-server": "*",
+    "copy-webpack-plugin": "*"
+  },
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server"
+  }
+}
