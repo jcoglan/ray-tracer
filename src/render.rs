@@ -57,7 +57,7 @@ impl Scene {
         let ray = film.ray_at(x, y);
 
         let nearest = self.models.iter()
-            .flat_map(|model| model.intersect(&ray))
+            .filter_map(|model| model.intersect(&ray))
             .min_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap());
 
         if let Some((_, surface)) = nearest {
