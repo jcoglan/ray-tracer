@@ -2,12 +2,14 @@ use wasm_bindgen::prelude::*;
 use crate::camera::{Camera, Film};
 use crate::color::RGB;
 use crate::geometry::Pt;
-use crate::model::{Model, Sphere};
+use crate::light::{Light, PointLight};
+use crate::model::{Model, Surface, Sphere};
 
 
 #[wasm_bindgen]
 pub struct Scene {
     models: Vec<Box<dyn Model>>,
+    lights: Vec<Box<dyn Light>>,
     camera: Camera,
 }
 
@@ -15,8 +17,9 @@ pub struct Scene {
 impl Scene {
     pub fn new() -> Scene {
         let models = Vec::new();
+        let lights = Vec::new();
         let camera = Camera::new(Pt(0., 0., 0.), 10., 5.);
-        Scene { models, camera }
+        Scene { models, lights, camera }
     }
 
     pub fn add_sphere(&mut self, center: Pt, radius: f64, color: RGB) {
@@ -27,6 +30,16 @@ impl Scene {
         where M: Model + 'static
     {
         self.models.push(Box::new(model));
+    }
+
+    pub fn add_point_light(&mut self, point: Pt, brightness: f64) {
+        self.add_light(PointLight::new(point, brightness));
+    }
+
+    fn add_light<L>(&mut self, light: L)
+        where L: Light + 'static
+    {
+        self.lights.push(Box::new(light));
     }
 
     pub fn render(&self, image: &mut Image) {
@@ -48,14 +61,22 @@ impl Scene {
             .min_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap());
 
         if let Some((_, surface)) = nearest {
-            surface.color
+            self.apply_lighting(surface)
         } else {
             self.bg_color(x, y)
         }
     }
 
+    fn apply_lighting(&self, surface: Surface) -> RGB {
+        let brightness = self.lights.iter()
+            .map(|light| light.flux_at(&surface.point))
+            .sum();
+
+        surface.color.scale(brightness)
+    }
+
     fn bg_color(&self, _: usize, _: usize) -> RGB {
-        RGB(0x20, 0x20, 0x20)
+        RGB(0x10, 0x10, 0x10)
     }
 }
 

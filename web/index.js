@@ -15,5 +15,7 @@ scene.add_sphere(Pt.new(-18, 0,  60), 10, RGB.new(0xf7, 0x5c, 0x03))
 scene.add_sphere(Pt.new(  0, 0, 120), 10, RGB.new(0x22, 0x74, 0xa5))
 scene.add_sphere(Pt.new( 18, 0,  60), 10, RGB.new(0xf1, 0xc4, 0x0f))
 
+scene.add_point_light(Pt.new(-9, -20, 90), 500.0)
+
 scene.render(image)
 ctx.putImageData(data, 0, 0)
