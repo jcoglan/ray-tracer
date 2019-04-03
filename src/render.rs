@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 use crate::camera::{Camera, Film};
+use crate::color::RGB;
 use crate::geometry::Pt;
 use crate::model::{Model, Sphere};
 
@@ -18,8 +19,8 @@ impl Scene {
         Scene { models, camera }
     }
 
-    pub fn add_sphere(&mut self, center: Pt, radius: f64) {
-        self.add_model(Sphere::new(center, radius));
+    pub fn add_sphere(&mut self, center: Pt, radius: f64, color: RGB) {
+        self.add_model(Sphere::new(center, radius, color));
     }
 
     fn add_model<M>(&mut self, model: M)
@@ -42,14 +43,14 @@ impl Scene {
     fn color_at(&self, film: &Film, x: usize, y: usize) -> RGB {
         let ray = film.ray_at(x, y);
 
-        let points: Vec<_> = self.models.iter()
-            .flat_map(|model| { model.intersect(&ray) })
-            .collect();
+        let nearest = self.models.iter()
+            .flat_map(|model| model.intersect(&ray))
+            .min_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap());
 
-        if points.len() == 0 {
-            self.bg_color(x, y)
+        if let Some((_, surface)) = nearest {
+            surface.color
         } else {
-            RGB(0xff, 0xff, 0xff)
+            self.bg_color(x, y)
         }
     }
 
@@ -57,9 +58,6 @@ impl Scene {
         RGB(0x20, 0x20, 0x20)
     }
 }
-
-
-struct RGB(u8, u8, u8);
 
 
 #[wasm_bindgen]
