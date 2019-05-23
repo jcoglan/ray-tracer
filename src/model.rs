@@ -1,5 +1,5 @@
 use crate::color::RGB;
-use crate::geometry::{Pt, Ray};
+use crate::geometry::{Pt, Unit, Ray};
 
 
 pub trait Model {
@@ -10,6 +10,7 @@ pub trait Model {
 pub struct Surface {
     pub point: Pt,
     pub color: RGB,
+    pub normal: Unit,
 }
 
 
@@ -38,7 +39,8 @@ impl Model for Sphere {
         if d > 0. {
             let point = ray.point_at(d);
             let color = self.color.clone();
-            Some((d, Surface { point, color }))
+            let normal = point.dir_from(&self.center);
+            Some((d, Surface { point, color, normal }))
         } else {
             None
         }

@@ -69,7 +69,7 @@ impl Scene {
 
     fn apply_lighting(&self, surface: Surface) -> RGB {
         let brightness = self.lights.iter()
-            .map(|light| light.flux_at(&surface.point))
+            .map(|light| light.brightness_at(&surface))
             .sum();
 
         surface.color.scale(brightness)

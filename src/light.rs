@@ -1,8 +1,9 @@
 use crate::geometry::Pt;
+use crate::model::Surface;
 
 
 pub trait Light {
-    fn flux_at(&self, point: &Pt) -> f64;
+    fn brightness_at(&self, surface: &Surface) -> f64;
 }
 
 
@@ -18,8 +19,15 @@ impl PointLight {
 }
 
 impl Light for PointLight {
-    fn flux_at(&self, point: &Pt) -> f64 {
-        let dist = self.point.sub(point).len();
-        self.brightness / dist.powi(2)
+    fn brightness_at(&self, surface: &Surface) -> f64 {
+        let line = self.point.sub(&surface.point);
+        let dist = line.len();
+        let cos = line.dot(&surface.normal) / dist;
+
+        if cos > 0. {
+            self.brightness * cos / dist.powi(2)
+        } else {
+            0.
+        }
     }
 }

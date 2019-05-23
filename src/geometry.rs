@@ -37,6 +37,10 @@ impl Pt {
         Pt(x1 - x2, y1 - y2, z1 - z2)
     }
 
+    pub fn dir_from(&self, other: &Pt) -> Unit {
+        self.sub(other).into()
+    }
+
     pub fn dot<T>(&self, other: T) -> f64
         where T: Into<(f64, f64, f64)>
     {
@@ -55,6 +59,13 @@ impl From<&Pt> for (f64, f64, f64) {
     fn from(pt: &Pt) -> Self {
         let Pt(x, y, z) = pt;
         (*x, *y, *z)
+    }
+}
+
+impl From<Pt> for Unit {
+    fn from(pt: Pt) -> Self {
+        let Pt(x, y, z) = pt;
+        Unit::new(x, y, z)
     }
 }
 
